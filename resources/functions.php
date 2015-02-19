@@ -8,18 +8,16 @@ require BASEPATH . 'resources/view.php';
  * Функция для работы с пользователем
  */
 
-function user_exists (mysqli $mysqli, $username, $password) {
-	$username = $mysqli->real_escape_string($username);
-	$password = $mysqli->real_escape_string($password);
-	
+function user_exists (PDO $pdo, $username, $password) {
 	$query = "
-		SELECT username, password
+		SELECT COUNT(*)
 		FROM users
-		WHERE username = '$username' AND password = '$password'
+		WHERE username = ? AND password = ?
 	";
 	
-	$result = $mysqli->query($query);
+	$statement = $pdo->prepare($query);
+	$statement->execute(array($username, $password));
 	
-	return $result->num_rows > 0;
+	return $statement->fetchColumn() > 0;
 }
 

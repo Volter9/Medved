@@ -2,12 +2,11 @@
 
 $fields = array('username', 'password');
 
-if (!$data = post_input($fields)) {
+if (!$data = post_input($fields, true)) {
 	return 'Одно из полей не заполнено.';
 }
 
 $mysqli = db_connect();
-$data = db_escape($mysqli, $data);
 
 $data['password'] = md5($data['password']);
 

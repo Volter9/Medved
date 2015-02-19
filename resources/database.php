@@ -12,24 +12,26 @@ function db_connect (
 	$password = '', 
 	$database = 'test'
 ) {
-	$mysqli = new mysqli($host, $user, $password, $database);
-	$mysqli->set_charset('utf8');
+	$dsn = "mysql:host=$host;charset=utf8;dbname=$database";
 	
-	return $mysqli;
+	$pdo = new PDO($dsn, $user, $password);
+
+	return $pdo;
 }
 
-function db_insert (mysqli $mysqli, $table, array $data) {
+function db_insert (PDO $pdo, $table, array $data) {
 	$keys = array_keys($data);
-	$values = array_values($data);
+	$data = array_values($data);
 	
 	$columns = db_columns($keys);
-	$values = db_values($mysqli, $values);
+	$values = trim(str_repeat('?, ', count($data)), COLUMN_GLUE);
 	
 	$query = "INSERT INTO $table ($columns) VALUES ($values)";
 	
-	$mysqli->query($query);
+	$statement = $pdo->prepare($query);
+	$statement->execute($data);
 	
-	return $mysqli->affected_rows > 0;
+	return $pdo->lastInsertId();
 }
 
 function db_columns (array $columns) {
@@ -45,28 +47,4 @@ function db_columns (array $columns) {
 
 function db_escape_column ($column) {
 	return "`$column`";
-}
-
-function db_values ($link, array $values) {
-	$values = db_escape($link, $values);
-
-	return implode(COLUMN_GLUE, db_values_wrap($values));
-}
-
-function db_escape ($link, array $values) {
-	return array_map(
-		function ($value) use ($link) {
-			return $link->real_escape_string($value);
-		}, 
-		$values
-	);
-}
-
-function db_values_wrap (array $values) {
-	return array_map(
-		function ($value) {
-			return "'$value'";
-		}, 
-		$values
-	);
 }
