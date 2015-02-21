@@ -10,6 +10,6 @@ if (is_post()) {
 	$error = require 'actions/login.php';
 }
 
-view('templates/login.php', [
+view('templates/login.php', array (
 	'error' => $error
-]);
+));

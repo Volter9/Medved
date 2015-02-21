@@ -13,7 +13,7 @@ $data['password'] = md5($data['password']);
 $username = $data['username'];
 $password = $data['password'];
 
-if (user_exists($db, $username, $password)) {
+if (user_exists($db, $username)) {
 	return 'Данный пользователь уже существует';
 }
 

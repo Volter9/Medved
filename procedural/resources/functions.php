@@ -8,15 +8,15 @@ require BASEPATH . 'resources/view.php';
  * Функция для работы с пользователем
  */
 
-function user_exists (PDO $pdo, $username, $password) {
+function user_exists (PDO $pdo, $username) {
 	$query = "
 		SELECT COUNT(*)
 		FROM users
-		WHERE username = ? AND password = ?
+		WHERE username = ?
 	";
 	
 	$statement = $pdo->prepare($query);
-	$statement->execute(array($username, $password));
+	$statement->execute(array($username));
 	
 	return $statement->fetchColumn() > 0;
 }
